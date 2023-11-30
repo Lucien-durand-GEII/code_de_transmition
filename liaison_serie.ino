@@ -60,14 +60,12 @@ PORTB = 0b0;
 /*! \brief fonction de transmition
  * on creer une fonction qui va transmettre des donner
  */
-void USART_Transmit(unsigned char data)
-{
+void USART_Transmit(unsigned char data){
 while (!(UCSR0A & (1<<UDRE0)));/* on attend que la transmition soit finis */
 UDR0 = data;/* Put data into buffer, sends the data */
 }
 
-unsigned char USART_Receive(void)
-{
+unsigned char USART_Receive(void){
 while (!(UCSR0A & (1<<RXC0)));
 return UDR0;
 }
@@ -78,16 +76,20 @@ ISR(USART_RX_vect){
   PORTB = 0b00100000;
 }
 
-void USART_puts(unsigned char *str)
-{
-do
-{
-USART_Transmit(*str);
-} while (*++str!=0);
+void USART_puts(unsigned char *str){
+  do{
+    USART_Transmit(*str);
+  } 
+  while (*++str!=0);
 }
 
-int main(void)
-{
+void USART_putsln(unsigned char *str){
+  USART_puts(str);
+  USART_Transmit('\n');
+  USART_Transmit('\r');
+}
+
+int main(void){
 USART_Init(MYUBRR);
 sei();
   while(1){
@@ -95,7 +97,7 @@ sei();
     _delay_ms(1);
     if (flag == 1){
       //USART_Transmit(data);
-      USART_puts("IUT DE Troyes 10");
+      USART_putsln("IUT DE Troyes 10");
       flag = 0;
     }
     
